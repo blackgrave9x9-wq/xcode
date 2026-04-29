@@ -25,7 +25,7 @@ export async function chatCompletion(
   messages: Message[],
   tools?: any[]
 ): Promise<ChatCompletionResponse> {
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+  const response = await fetch("https://openrouter.ai/api/v1/chat/responses", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
