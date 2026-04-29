@@ -1,4 +1,3 @@
-
 export interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string | any[];
@@ -25,24 +24,24 @@ export async function chatCompletion(
   messages: Message[],
   tools?: any[]
 ): Promise<ChatCompletionResponse> {
-  const response = await fetch("https://openrouter.ai/api/v1/chat/responses", {
+  // HAPA NDIYO PANAPOFANYA KAZI: Tunaiambia iende Cloudflare badala ya Firebase
+  const CLOUDFLARE_WORKER_URL = "https://weathered-cherry-987d.blackgrave9x9.workers.dev";
+
+  const response = await fetch(CLOUDFLARE_WORKER_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      "model": "google/gemini-2.0-flash-001",
+      "prompt": messages[messages.length - 1].content,
       "messages": messages,
-      "tools": tools,
-      "tool_choice": tools ? "auto" : undefined,
+      "model": "google/gemini-2.0-flash-001"
     })
   });
 
   if (!response.ok) {
-    const errorData = await response.json();
-    const errorMessage = typeof errorData.error === 'string' 
-      ? errorData.error 
-      : (errorData.error?.message || JSON.stringify(errorData.error || errorData) || "Failed to fetch from OpenRouter");
+    const errorData = await response.json().catch(() => ({}));
+    const errorMessage = errorData.error || "Tatizo limetokea kwenye Worker";
     throw new Error(errorMessage);
   }
 
